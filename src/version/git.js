@@ -18,7 +18,7 @@ module.exports = class Git extends BaseVersioning {
         const currentVersion = tags.length > 0 ? tags.shift().replace(tagPrefix, '') : null
 
         // get the last release tag
-        let releases = tags.filter((tag) => {return tag.split('-').length === 1})
+        let releases = tags.map((tag) => tag.replace(tagPrefix, '')).filter((tag) => {return tag.split('-').length === 1})
         const currentRelease = releases.length > 0 ? releases[releases.length -1] : null
 
         // Get the new version
