@@ -36,6 +36,7 @@ module.exports = class Json extends BaseVersioning {
     this.newVersion = await bumpVersion(
       releaseType,
       oldVersion,
+      oldVersion
     )
 
     core.info(`Bumped file "${this.fileLocation}" from "${oldVersion}" to "${this.newVersion}"`)

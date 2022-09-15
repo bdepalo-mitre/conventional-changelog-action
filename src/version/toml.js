@@ -23,6 +23,7 @@ module.exports = class Toml extends BaseVersioning {
     this.newVersion = await bumpVersion(
       releaseType,
       oldVersion,
+      oldVersion
     )
 
     // Update the file

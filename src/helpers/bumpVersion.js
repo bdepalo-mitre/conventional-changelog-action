@@ -7,16 +7,19 @@ const requireScript = require('./requireScript')
  * Bumps the given version with the given release type
  *
  * @param releaseType
- * @param version
+ * @param lastVersion
+ * @param lastRelease
  * @returns {string}
  */
-module.exports = async (releaseType, version) => {
+module.exports = async (releaseType, lastVersion, lastRelease) => {
   let major, minor, patch, normalTag, prereleaseTag, prereleasePrefix, prereleaseVersion
 
-  let prerelease = core.getInput('prerelease')
+  let inputPrereleasePrefix = core.getInput('prerelease')
 
-  if (version) {
-    [normalTag, prereleaseTag] = version.split('-');
+  core.info(`Previous release: ${lastRelease}`)
+
+  if (lastVersion) {
+    [normalTag, prereleaseTag] = lastVersion.split('-');
     [major, minor, patch] = normalTag.split('.');
 
     if (prereleaseTag) {
@@ -28,10 +31,10 @@ module.exports = async (releaseType, version) => {
     minor = parseInt(minor, 10)
     patch = parseInt(patch, 10)
 
-    if (prerelease) {
+    if (inputPrereleasePrefix) {
 
       // prerelease with previous version
-      core.info(`Pre-release with previous version: ${version}`)
+      core.info(`Pre-release with previous version: ${lastVersion}`)
 
       if (prereleaseTag) {
         // previous version was a prerelease TODO: complicated
@@ -61,7 +64,7 @@ module.exports = async (releaseType, version) => {
     } else {
 
       // releases with version
-      core.info(`Release with previous version: ${version}`)
+      core.info(`Release with previous version: ${lastVersion}`)
 
       if (prereleaseTag) {
         // previous version was a prerelease TODO: complicated
@@ -109,16 +112,16 @@ module.exports = async (releaseType, version) => {
 
   let newVersion;
 
-  if(prerelease) {
+  if(inputPrereleasePrefix) {
 
     // special case where prerelease prefixes change
-    if(prereleaseTag && prerelease !== prereleasePrefix){
-      core.debug(`Prerelease prefix has changed from ${prereleasePrefix} to ${prerelease}`)
+    if(prereleaseTag && inputPrereleasePrefix !== prereleasePrefix){
+      core.debug(`Prerelease prefix has changed from ${prereleasePrefix} to ${inputPrereleasePrefix}`)
       prereleaseVersion = 0
     }
 
     // prerelease
-    newVersion = `${major}.${minor}.${patch}-${prerelease}.${prereleaseVersion}`
+    newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.${prereleaseVersion}`
   } else {
 
     // release
