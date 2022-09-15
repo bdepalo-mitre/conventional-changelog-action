@@ -127,7 +127,6 @@ jobs:
       - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
 
       - name: Generate release changelog
-        id: changelog
         uses: ./
         env:
           ENV: 'dont-use-git'
@@ -142,7 +141,6 @@ jobs:
       - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
 
       - name: Generate pre-release changelog
-        id: changelog
         uses: ./
         env:
           ENV: 'dont-use-git'
@@ -158,7 +156,6 @@ jobs:
       - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
 
       - name: Generate pre-release with changed prefix changelog
-        id: changelog
         uses: ./
         env:
           ENV: 'dont-use-git'
@@ -168,7 +165,17 @@ jobs:
           prerelease-prefix: "beta"
           github-token: ${{ secrets.github_token }}
           skip-commit: 'true'
-          
+
+      - name: Generate release with previous pre-release
+        uses: ./
+        env:
+          ENV: 'dont-use-git'
+          EXPECTED_TAG: 'v0.55.10'
+          SKIPPED_COMMIT: true
+        with:
+          github-token: ${{ secrets.github_token }}
+          skip-commit: 'true'
+
   test-git-no-pull:
     runs-on: ubuntu-latest
     steps:

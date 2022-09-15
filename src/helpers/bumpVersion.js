@@ -18,37 +18,72 @@ module.exports = async (releaseType, version) => {
   if (version) {
     [normalTag, prereleaseTag] = version.split('-');
     [major, minor, patch] = normalTag.split('.');
-    [prereleasePrefix, prereleaseVersion] = prereleaseTag.split('.');
+
+    if (prereleaseTag) {
+      [prereleasePrefix, prereleaseVersion] = prereleaseTag.split('.');
+      prereleaseVersion = parseInt(prereleaseVersion, 10);
+    }
+
+    major = parseInt(major, 10)
+    minor = parseInt(minor, 10)
+    patch = parseInt(patch, 10)
 
     if (prerelease) {
 
-      // prereleases with version
+      // prerelease with previous version
       core.info(`Pre-release with previous version: ${version}`)
 
-      major = parseInt(major, 10)
-      minor = parseInt(minor, 10)
-      patch = parseInt(patch, 10)
-      prereleaseVersion = parseInt(prereleaseVersion, 10) + 1
+      if (prereleaseTag) {
+        // previous version was a prerelease TODO: complicated
+        prereleaseVersion = prereleaseVersion + 1
+      } else {
+
+        // previous version was a release
+        prereleaseVersion = 0
+
+        switch (releaseType) {
+          case 'major':
+            major = major + 1
+            minor = 0
+            patch = 0
+            break
+
+          case 'minor':
+            minor = minor + 1
+            patch = 0
+            break
+
+          default:
+            patch = patch + 1
+        }
+      }
 
     } else {
 
       // releases with version
       core.info(`Release with previous version: ${version}`)
 
-      switch (releaseType) {
-        case 'major':
-          major = parseInt(major, 10) + 1
-          minor = 0
-          patch = 0
-          break
+      if (prereleaseTag) {
+        // previous version was a prerelease TODO: complicated
+        prereleaseVersion = prereleaseVersion + 1
+      } else {
+        // previous version was a release
 
-        case 'minor':
-          minor = parseInt(minor, 10) + 1
-          patch = 0
-          break
+        switch (releaseType) {
+          case 'major':
+            major = major + 1
+            minor = 0
+            patch = 0
+            break
 
-        default:
-          patch = parseInt(patch, 10) + 1
+          case 'minor':
+            minor = minor + 1
+            patch = 0
+            break
+
+          default:
+            patch = patch + 1
+        }
       }
     }
   } else {
@@ -77,7 +112,7 @@ module.exports = async (releaseType, version) => {
   if(prerelease) {
 
     // special case where prerelease prefixes change
-    if(prerelease !== prereleasePrefix){
+    if(prereleaseTag && prerelease !== prereleasePrefix){
       core.debug(`Prerelease prefix has changed from ${prereleasePrefix} to ${prerelease}`)
       prereleaseVersion = 0
     }

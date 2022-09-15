@@ -11,6 +11,9 @@ module.exports = class Git extends BaseVersioning {
       const tagPrefix = core.getInput('tag-prefix')
 
       gitSemverTags({ tagPrefix, }, async (err, tags) => {
+
+        core.info(`Tags received: ${tags}`)
+
         const currentVersion = tags.length > 0 ? tags.shift().replace(tagPrefix, '') : null
 
         // Get the new version
