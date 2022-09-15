@@ -46,6 +46,7 @@ async function run() {
     const gitUrl = core.getInput('git-url')
     const skipCi = core.getBooleanInput('skip-ci')
     const createSummary = core.getBooleanInput('create-summary')
+    const prereleasePrefix = core.getInput('prerelease-prefix')
 
     if (skipCi) {
       gitCommitMessage += ' [skip ci]'
@@ -63,6 +64,7 @@ async function run() {
     core.info(`Using "${conventionalConfigFile}" as config file`)
     core.info(`Using "${gitUrl}" as gitUrl`)
     core.info(`Using "${gitBranch}" as gitBranch`)
+    core.info(`Using "${prereleasePrefix}" as prereleasePrefix`)
 
     if (preCommitFile) {
       core.info(`Using "${preCommitFile}" as pre-commit script`)

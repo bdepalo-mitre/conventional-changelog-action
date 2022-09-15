@@ -128,6 +128,10 @@ inputs:
     default: 'false'
     required: false
 
+  prerelease-prefix:
+    description: 'Pre-release version prefix. If set, a pre-release version will be appended to the version'
+    required: false
+
 outputs:
   changelog:
     description: 'The generated changelog for the new version'

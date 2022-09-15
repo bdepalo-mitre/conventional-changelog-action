@@ -27,6 +27,7 @@ This action will bump version, tag commit and generate a changelog with conventi
 - **Optional** `pre-changelog-generation`: Path to the pre-changelog-generation script file. No hook by default.
 - **Optional** `skip-ci`: Adds instruction to Github to not consider the push something to rebuild. Default `true`.
 - **Optional** `create-summary`: Adds the generated changelog as Action Summary. Default `false`.
+- **Optional** `prerelease-prefix`: Pre-release version prefix. If set, a pre-release version will be appended to the version. No pre-release version by default.
 
 ### Pre-Commit hook
 
@@ -131,6 +132,7 @@ Overwrite everything
     skip-version-file: 'false'
     skip-commit: 'false'
     git-branch: 'my-maintenance-branch'
+    prerelease-prefix: 'alpha'
 ```
 
 No file changelog
@@ -151,6 +153,17 @@ Tag only
   with:
     github-token: ${{ secrets.github_token }}
     skip-commit: "true"
+```
+
+Pre-Release
+Appends a pre-release version with the given prefix. In this example version 1.0.2 would become 1.0.3-alpha.0
+
+```yaml
+- name: Conventional Changelog Action
+  uses: TriPSs/conventional-changelog-action@v3
+  with:
+    github-token: ${{ secrets.github_token }}
+    prerelease-prefix: "alpha"
 ```
 
 Skip Git Pull

@@ -11,28 +11,52 @@ const requireScript = require('./requireScript')
  * @returns {string}
  */
 module.exports = async (releaseType, version) => {
-  let major, minor, patch
+  let major, minor, patch, normalTag, prereleaseTag, prereleasePrefix, prereleaseVersion
+
+  let prerelease = core.getInput('prerelease')
 
   if (version) {
-    [major, minor, patch] = version.split('.')
+    [normalTag, prereleaseTag] = version.split('-');
+    [major, minor, patch] = normalTag.split('.');
+    [prereleasePrefix, prereleaseVersion] = prereleaseTag.split('.');
 
-    switch (releaseType) {
-      case 'major':
-        major = parseInt(major, 10) + 1
-        minor = 0
-        patch = 0
-        break
+    if (prerelease) {
 
-      case 'minor':
-        minor = parseInt(minor, 10) + 1
-        patch = 0
-        break
+      // prereleases with version
+      core.info(`Pre-release with previous version: ${version}`)
 
-      default:
-        patch = parseInt(patch, 10) + 1
+      major = parseInt(major, 10)
+      minor = parseInt(minor, 10)
+      patch = parseInt(patch, 10)
+      prereleaseVersion = parseInt(prereleaseVersion, 10) + 1
+
+    } else {
+
+      // releases with version
+      core.info(`Release with previous version: ${version}`)
+
+      switch (releaseType) {
+        case 'major':
+          major = parseInt(major, 10) + 1
+          minor = 0
+          patch = 0
+          break
+
+        case 'minor':
+          minor = parseInt(minor, 10) + 1
+          patch = 0
+          break
+
+        default:
+          patch = parseInt(patch, 10) + 1
+      }
     }
   } else {
+
+    // anything with no version
+
     let version = semverValid(core.getInput('fallback-version'))
+    prereleaseVersion = 0;
 
     if (version) {
       [major, minor, patch] = version.split('.')
@@ -43,12 +67,30 @@ module.exports = async (releaseType, version) => {
       patch = 0
     }
 
-    core.info(`The version could not be detected, using fallback version '${major}.${minor}.${patch}'.`)
+    core.info(`The previous version could not be detected, using fallback '${major}.${minor}.${patch}'.`)
   }
 
   const preChangelogGenerationFile = core.getInput('pre-changelog-generation')
 
-  let newVersion = `${major}.${minor}.${patch}`
+  let newVersion;
+
+  if(prerelease) {
+
+    // special case where prerelease prefixes change
+    if(prerelease !== prereleasePrefix){
+      core.debug(`Prerelease prefix has changed from ${prereleasePrefix} to ${prerelease}`)
+      prereleaseVersion = 0
+    }
+
+    // prerelease
+    newVersion = `${major}.${minor}.${patch}-${prerelease}.${prereleaseVersion}`
+  } else {
+
+    // release
+    newVersion = `${major}.${minor}.${patch}`
+  }
+
+  core.info(`Unmodified new version: ${newVersion}`)
 
   if (preChangelogGenerationFile) {
     const preChangelogGenerationScript = requireScript(preChangelogGenerationFile)

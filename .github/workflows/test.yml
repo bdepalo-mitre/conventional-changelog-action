@@ -126,7 +126,7 @@ jobs:
         run: "git tag -a 'v0.55.8' -m 'v0.55.8'"
       - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
 
-      - name: Generate changelog
+      - name: Generate release changelog
         id: changelog
         uses: ./
         env:
@@ -134,6 +134,38 @@ jobs:
           EXPECTED_TAG: 'v0.55.9'
           SKIPPED_COMMIT: true
         with:
+          github-token: ${{ secrets.github_token }}
+          skip-commit: 'true'
+
+      - name: Create fake tag
+        run: "git tag -a 'v0.55.10-alpha.0' -m 'v0.55.10-alpha.0'"
+      - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
+
+      - name: Generate pre-release changelog
+        id: changelog
+        uses: ./
+        env:
+          ENV: 'dont-use-git'
+          EXPECTED_TAG: 'v0.55.10-alpha.1'
+          SKIPPED_COMMIT: true
+        with:
+          prerelease-prefix: "alpha"
+          github-token: ${{ secrets.github_token }}
+          skip-commit: 'true'
+
+      - name: Create fake tag
+        run: "git tag -a 'v0.55.10-alpha.2' -m 'v0.55.10-alpha.2'"
+      - run: "git add . && git commit --allow-empty -m 'fix: Added fake file so version will be bumped'"
+
+      - name: Generate pre-release with changed prefix changelog
+        id: changelog
+        uses: ./
+        env:
+          ENV: 'dont-use-git'
+          EXPECTED_TAG: 'v0.55.10-beta.0'
+          SKIPPED_COMMIT: true
+        with:
+          prerelease-prefix: "beta"
           github-token: ${{ secrets.github_token }}
           skip-commit: 'true'
           
