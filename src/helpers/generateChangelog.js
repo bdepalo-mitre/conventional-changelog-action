@@ -14,7 +14,8 @@ const getChangelogStream = (tagPrefix, preset, version, releaseCount, config) =>
     preset,
     releaseCount: parseInt(releaseCount, 10),
     tagPrefix,
-    config
+    config,
+    skipUnstable: true
   },
   {
     version,
