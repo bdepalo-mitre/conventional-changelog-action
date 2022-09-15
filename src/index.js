@@ -205,6 +205,10 @@ async function run() {
         core.info('We not going to push the GIT changes')
       }
 
+      core.info("Setting outputs")
+      core.info(`version: ${newVersion}`)
+      core.info(`tag: ${gitTag}`)
+
       // Set outputs so other actions (for example actions/create-release) can use it
       core.setOutput('changelog', stringChangelog)
       core.setOutput('clean_changelog', cleanChangelog)
