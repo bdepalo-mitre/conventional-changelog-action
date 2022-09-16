@@ -119,8 +119,25 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
     core.info(`The previous release could not be detected, using fallback '${major}.${minor}.${patch}'.`);
 
     if (inputPrereleasePrefix) {
+
+      let previousBaseVersion, previousPrerelease, previousPrereleasePrefix, previousPrereleaseVersion;
+      let prereleaseVersion = 0; // default
+
       // this is a prerelease
-      newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.0`;
+      if (lastVersion) {
+
+        [previousBaseVersion, previousPrerelease] = lastVersion.split('-');
+
+        // split up previous prerelease version (if present)
+        if (previousPrerelease) {
+          // previous version was a prerelease
+          [previousPrereleasePrefix, previousPrereleaseVersion] = previousPrerelease.split('.');
+          previousPrereleaseVersion = parseInt(previousPrereleaseVersion, 10);
+          prereleaseVersion = previousPrereleaseVersion +1;
+        }
+      }
+
+      newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.${prereleaseVersion}`;
 
     } else {
       // this is a release
