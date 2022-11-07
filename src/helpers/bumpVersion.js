@@ -70,15 +70,16 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
         prereleaseMinor = parseInt(prereleaseMinor, 10);
         prereleasePatch = parseInt(prereleasePatch, 10);
 
-        core.info(`Matching major version: ${prereleaseMajor===major}`);
-        core.info(`Matching minor version: ${prereleaseMinor===minor}`);
-        core.info(`Matching patch version: ${prereleasePatch===patch}`);
+        core.debug(`Matching major version: ${prereleaseMajor===major}`);
+        core.debug(`Matching minor version: ${prereleaseMinor===minor}`);
+        core.debug(`Matching patch version: ${prereleasePatch===patch}`);
 
         // base versions match so apply prerelease version
         if(previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch){
           // release type didn't change from previous prerelease, increment prerelease version
           console.log(`Previous prerelease number: ${previousPrereleaseVersion}`);
-          prereleaseVersion = previousPrereleaseVersion + 1;
+          const prereleaseVersionInt = parseInt(previousPrereleaseVersion, 10);
+          prereleaseVersion = prereleaseVersionInt + 1;
         }
       }
 
