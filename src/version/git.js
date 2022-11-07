@@ -14,6 +14,9 @@ module.exports = class Git extends BaseVersioning {
 
         core.info(`Tags received: ${tags}`)
 
+        // order the tags
+        tags.sort();
+
         // get the last tag
         const currentVersion = tags.length > 0 ? tags.shift().replace(tagPrefix, '') : null
 
