@@ -51,7 +51,10 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
     }
 
     // apply prerelease version if applicable
-    if (inputPrereleasePrefix) {
+    if (inputPrereleasePrefix && lastVersion) {
+
+      core.info(`Previous prerelease: ${lastVersion}`);
+
       // this is a prerelease
       prereleaseVersion = 0; // default
 
@@ -64,6 +67,10 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
         const prereleaseMajor = parseInt(releaseMajor, 10);
         const prereleaseMinor = parseInt(releaseMinor, 10);
         const prereleasePatch = parseInt(releasePatch, 10);
+
+        core.info(`Matching major version: ${prereleaseMajor===major}`);
+        core.info(`Matching minor version: ${prereleaseMajor===minor}`);
+        core.info(`Matching patch version: ${prereleaseMajor===patch}`);
 
         // base versions match so apply prerelease version
         if(previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch){
