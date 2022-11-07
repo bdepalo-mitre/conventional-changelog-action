@@ -63,14 +63,16 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
 
         [, previousPrereleaseVersion] = previousPrerelease.split('.');
 
+        let prereleaseMajor, prereleaseMinor, prereleasePatch;
+
         [prereleaseMajor, prereleaseMinor, prereleasePatch] = previousBaseVersion.split('.');
-        const prereleaseMajor = parseInt(releaseMajor, 10);
-        const prereleaseMinor = parseInt(releaseMinor, 10);
-        const prereleasePatch = parseInt(releasePatch, 10);
+        prereleaseMajor = parseInt(prereleaseMajor, 10);
+        prereleaseMinor = parseInt(prereleaseMinor, 10);
+        prereleasePatch = parseInt(prereleasePatch, 10);
 
         core.info(`Matching major version: ${prereleaseMajor===major}`);
-        core.info(`Matching minor version: ${prereleaseMajor===minor}`);
-        core.info(`Matching patch version: ${prereleaseMajor===patch}`);
+        core.info(`Matching minor version: ${prereleaseMinor===minor}`);
+        core.info(`Matching patch version: ${prereleasePatch===patch}`);
 
         // base versions match so apply prerelease version
         if(previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch){
