@@ -53,10 +53,10 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
     // apply prerelease version if applicable
     if (inputPrereleasePrefix && lastVersion) {
 
-      core.info(`Previous prerelease: ${lastVersion}`);
-
       // this is a prerelease
       prereleaseVersion = 0; // default
+
+      core.info(`Previous version: ${lastVersion}`);
 
       [previousBaseVersion, previousPrerelease] = lastVersion.split('-');
       if (previousPrerelease && previousBaseVersion) {
@@ -75,9 +75,11 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
         // base versions match so apply prerelease version
         if(previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch){
           // release type didn't change from previous prerelease, increment prerelease version
+          console.log(`Previous prerelease number: ${previousPrereleaseVersion}`);
           prereleaseVersion = previousPrereleaseVersion + 1;
         }
       }
+
       newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.${prereleaseVersion}`;
 
     } else {
