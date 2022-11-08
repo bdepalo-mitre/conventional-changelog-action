@@ -22,7 +22,6 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
     // last release exists
     core.info(`Previous release: ${lastRelease}`);
     let releaseMajor, releaseMinor, releasePatch;
-    let previousBaseVersion, previousPrerelease, previousPrereleaseVersion;
 
     // split up release version
     [releaseMajor, releaseMinor, releasePatch] = lastRelease.split('.');
@@ -50,46 +49,6 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
         patch = releasePatch + 1;
     }
 
-    // apply prerelease version if applicable
-    if (inputPrereleasePrefix && lastVersion) {
-
-      // this is a prerelease
-      prereleaseVersion = 0; // default
-
-      core.info(`Previous version: ${lastVersion}`);
-
-      [previousBaseVersion, previousPrerelease] = lastVersion.split('-');
-      if (previousPrerelease && previousBaseVersion) {
-
-        [, previousPrereleaseVersion] = previousPrerelease.split('.');
-
-        let prereleaseMajor, prereleaseMinor, prereleasePatch;
-
-        [prereleaseMajor, prereleaseMinor, prereleasePatch] = previousBaseVersion.split('.');
-        prereleaseMajor = parseInt(prereleaseMajor, 10);
-        prereleaseMinor = parseInt(prereleaseMinor, 10);
-        prereleasePatch = parseInt(prereleasePatch, 10);
-
-        core.debug(`Matching major version: ${prereleaseMajor===major}`);
-        core.debug(`Matching minor version: ${prereleaseMinor===minor}`);
-        core.debug(`Matching patch version: ${prereleasePatch===patch}`);
-
-        // base versions match so apply prerelease version
-        if(previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch){
-          // release type didn't change from previous prerelease, increment prerelease version
-          console.log(`Previous prerelease number: ${previousPrereleaseVersion}`);
-          const prereleaseVersionInt = parseInt(previousPrereleaseVersion, 10);
-          prereleaseVersion = prereleaseVersionInt + 1;
-        }
-      }
-
-      newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.${prereleaseVersion}`;
-
-    } else {
-      // this is a release
-      newVersion = `${major}.${minor}.${patch}`;
-    }
-
   } else {
 
     // last release does not exist, use fallback
@@ -113,14 +72,40 @@ module.exports = async (releaseType, lastVersion, lastRelease) => {
     }
 
     core.info(`The previous release could not be detected, using fallback '${major}.${minor}.${patch}'.`);
+  }
 
-    if (inputPrereleasePrefix) {
-      // this is a pre-release
-      newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.0`;
+  newVersion = `${major}.${minor}.${patch}`;
 
-    } else {
-      // this is a release
-      newVersion = `${major}.${minor}.${patch}`;
+  // apply pre-release version
+  if(inputPrereleasePrefix) {
+
+    let previousBaseVersion, previousPrerelease, previousPrereleaseVersion;
+    [previousBaseVersion, previousPrerelease] = lastVersion.split('-');
+
+    if (previousPrerelease && previousBaseVersion) {
+
+      [, previousPrereleaseVersion] = previousPrerelease.split('.');
+
+      let prereleaseMajor, prereleaseMinor, prereleasePatch;
+
+      [prereleaseMajor, prereleaseMinor, prereleasePatch] = previousBaseVersion.split('.');
+      prereleaseMajor = parseInt(prereleaseMajor, 10);
+      prereleaseMinor = parseInt(prereleaseMinor, 10);
+      prereleasePatch = parseInt(prereleasePatch, 10);
+
+      core.debug(`Matching major version: ${prereleaseMajor === major}`);
+      core.debug(`Matching minor version: ${prereleaseMinor === minor}`);
+      core.debug(`Matching patch version: ${prereleasePatch === patch}`);
+
+      // base versions match so apply prerelease version
+      if (previousPrereleaseVersion && prereleaseMajor === major && prereleaseMinor === minor && prereleasePatch === patch) {
+        // release type didn't change from previous prerelease, increment prerelease version
+        console.log(`Previous prerelease number: ${previousPrereleaseVersion}`);
+        const prereleaseVersionInt = parseInt(previousPrereleaseVersion, 10);
+        prereleaseVersion = prereleaseVersionInt+1;
+
+        newVersion = `${major}.${minor}.${patch}-${inputPrereleasePrefix}.${prereleaseVersion}`;
+      }
     }
   }
 
